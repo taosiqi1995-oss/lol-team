@@ -46,6 +46,7 @@
     }
 
     .post-btn:hover { opacity: 0.85; }
+    .post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .filter-bar {
       background: #0f1b35;
@@ -185,6 +186,13 @@
       font-size: 15px;
     }
 
+    .loading {
+      text-align: center;
+      padding: 80px 0;
+      color: #3a5070;
+      font-size: 15px;
+    }
+
     /* Modal */
     .overlay {
       display: none;
@@ -270,6 +278,7 @@
     }
 
     .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .cancel-btn {
       flex: 1;
@@ -327,7 +336,9 @@
 </div>
 
 <div class="main">
-  <div class="posts-grid" id="postsGrid"></div>
+  <div class="posts-grid" id="postsGrid">
+    <div class="loading" style="grid-column:1/-1">加载中...</div>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -402,23 +413,28 @@
 
       <div class="modal-actions">
         <button type="button" class="cancel-btn" onclick="closeModal()">取消</button>
-        <button type="submit" class="submit-btn">发布</button>
+        <button type="submit" class="submit-btn" id="submitBtn">发布</button>
       </div>
     </form>
   </div>
 </div>
 
-<script>
-  const STORAGE_KEY = 'lol_posts';
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  function getPosts() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
-  }
+  const firebaseConfig = {
+    apiKey: "AIzaSyB3oY2yGXpfevEk9jWWuFZKLlDYoPe8sjM",
+    authDomain: "lol-team-35920.firebaseapp.com",
+    projectId: "lol-team-35920",
+    storageBucket: "lol-team-35920.firebasestorage.app",
+    messagingSenderId: "537121312614",
+    appId: "1:537121312614:web:39755aef419d576810c2a7"
+  };
 
-  function savePosts(posts) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-  }
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
   function timeAgo(ts) {
     const diff = Math.floor((Date.now() - ts) / 1000);
@@ -428,84 +444,94 @@
     return Math.floor(diff / 86400) + '天前';
   }
 
-  function renderPosts() {
+  function esc(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  window.renderPosts = async function() {
     const rank = document.getElementById('filterRank').value;
     const pos = document.getElementById('filterPos').value;
     const server = document.getElementById('filterServer').value;
-    let posts = getPosts();
-
-    if (rank) posts = posts.filter(p => p.rank === rank);
-    if (pos) posts = posts.filter(p => p.position === pos || p.position === '不限');
-    if (server) posts = posts.filter(p => p.server === server);
-
     const grid = document.getElementById('postsGrid');
     const label = document.getElementById('countLabel');
-    label.textContent = `共 ${posts.length} 条`;
 
-    if (posts.length === 0) {
-      grid.innerHTML = '<div class="empty" style="grid-column:1/-1">暂无组队帖，来发一个吧！</div>';
-      return;
+    grid.innerHTML = '<div class="loading" style="grid-column:1/-1">加载中...</div>';
+
+    try {
+      let q = query(collection(db, 'posts'), orderBy('ts', 'desc'));
+      const snapshot = await getDocs(q);
+      let posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      if (rank) posts = posts.filter(p => p.rank === rank);
+      if (pos) posts = posts.filter(p => p.position === pos || p.position === '不限');
+      if (server) posts = posts.filter(p => p.server === server);
+
+      label.textContent = `共 ${posts.length} 条`;
+
+      if (posts.length === 0) {
+        grid.innerHTML = '<div class="empty" style="grid-column:1/-1">暂无组队帖，来发一个吧！</div>';
+        return;
+      }
+
+      grid.innerHTML = posts.map(p => `
+        <div class="post-card">
+          <span class="time-ago">${timeAgo(p.ts)}</span>
+          <div class="card-header">
+            <span class="summoner-name">${esc(p.name)}</span>
+            <span class="rank-badge rank-${p.rank}">${esc(p.rank)}</span>
+          </div>
+          <div class="card-info">
+            <div class="info-item">
+              <span class="label">位置</span>
+              <span class="position-tag">${esc(p.position)}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">招募</span>
+              <span class="value">${esc(p.need)}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">大区</span>
+              <span class="value">${esc(p.server || '未知')}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">时间</span>
+              <span class="value">${esc(p.gameTime)}</span>
+            </div>
+          </div>
+          ${p.note ? `<div class="note">${esc(p.note)}</div>` : ''}
+        </div>
+      `).join('');
+    } catch (e) {
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1">加载失败，请刷新重试</div>';
+      console.error(e);
     }
+  };
 
-    grid.innerHTML = posts.slice().reverse().map(p => `
-      <div class="post-card">
-        <span class="time-ago">${timeAgo(p.ts)}</span>
-        <div class="card-header">
-          <span class="summoner-name">${esc(p.name)}</span>
-          <span class="rank-badge rank-${p.rank}">${p.rank}</span>
-        </div>
-        <div class="card-info">
-          <div class="info-item">
-            <span class="label">位置</span>
-            <span class="position-tag">${p.position}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">招募</span>
-            <span class="value">${p.need}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">大区</span>
-            <span class="value">${esc(p.server || '未知')}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">时间</span>
-            <span class="value">${esc(p.gameTime)}</span>
-          </div>
-        </div>
-        ${p.note ? `<div class="note">${esc(p.note)}</div>` : ''}
-      </div>
-    `).join('');
-  }
-
-  function esc(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function openModal() {
+  window.openModal = function() {
     document.getElementById('overlay').classList.add('show');
     document.getElementById('name').focus();
-  }
+  };
 
-  function closeModal() {
+  window.closeModal = function() {
     document.getElementById('overlay').classList.remove('show');
     document.getElementById('postForm').reset();
     ['nameErr','serverErr','rankErr','posErr','timeErr','needErr'].forEach(id => {
       document.getElementById(id).textContent = '';
     });
-  }
+  };
 
-  function handleOverlayClick(e) {
-    if (e.target === document.getElementById('overlay')) closeModal();
-  }
+  window.handleOverlayClick = function(e) {
+    if (e.target === document.getElementById('overlay')) window.closeModal();
+  };
 
-  function clearFilters() {
+  window.clearFilters = function() {
     document.getElementById('filterRank').value = '';
     document.getElementById('filterPos').value = '';
     document.getElementById('filterServer').value = '';
-    renderPosts();
-  }
+    window.renderPosts();
+  };
 
-  function submitPost(e) {
+  window.submitPost = async function(e) {
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
     const server = document.getElementById('server').value;
@@ -528,14 +554,27 @@
 
     if (!valid) return;
 
-    const posts = getPosts();
-    posts.push({ name, server, rank, position, gameTime, need, note, ts: Date.now() });
-    savePosts(posts);
-    closeModal();
-    renderPosts();
-  }
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '发布中...';
 
-  renderPosts();
+    try {
+      await addDoc(collection(db, 'posts'), {
+        name, server, rank, position, gameTime, need, note,
+        ts: Date.now()
+      });
+      window.closeModal();
+      await window.renderPosts();
+    } catch (err) {
+      alert('发布失败，请重试');
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '发布';
+    }
+  };
+
+  window.renderPosts();
 </script>
 </body>
 </html>
