@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOL 组队平台</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #0a0e1a;
+      color: #c8d6f0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f1b35 0%, #1a2a50 100%);
+      border-bottom: 2px solid #c89b3c;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h1 {
+      font-size: 22px;
+      color: #c89b3c;
+      letter-spacing: 2px;
+      text-shadow: 0 0 12px rgba(200,155,60,0.5);
+    }
+
+    header h1 span { color: #e8d5a0; }
+
+    .post-btn {
+      background: linear-gradient(135deg, #c89b3c, #a07828);
+      color: #0a0e1a;
+      border: none;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: opacity 0.2s;
+    }
+
+    .post-btn:hover { opacity: 0.85; }
+
+    .filter-bar {
+      background: #0f1b35;
+      border-bottom: 1px solid #1e3060;
+      padding: 14px 32px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-bar label { font-size: 13px; color: #8899bb; }
+
+    .filter-bar select {
+      background: #162040;
+      color: #c8d6f0;
+      border: 1px solid #2a4070;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .filter-bar select:focus { border-color: #c89b3c; }
+
+    .clear-btn {
+      background: transparent;
+      color: #8899bb;
+      border: 1px solid #2a4070;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover { border-color: #c89b3c; color: #c89b3c; }
+
+    .count { font-size: 13px; color: #556688; margin-left: auto; }
+
+    .main { padding: 28px 32px; max-width: 1100px; margin: 0 auto; }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .post-card {
+      background: #0f1b35;
+      border: 1px solid #1e3060;
+      border-radius: 8px;
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.1s;
+      position: relative;
+    }
+
+    .post-card:hover {
+      border-color: #c89b3c;
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .summoner-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: #e8d5a0;
+    }
+
+    .rank-badge {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    .rank-铁 { background: #4a3030; color: #c08080; }
+    .rank-铜 { background: #3d2e1e; color: #c8935a; }
+    .rank-银 { background: #2a3040; color: #a0b8d0; }
+    .rank-金 { background: #3a2e10; color: #c89b3c; }
+    .rank-铂金 { background: #1a3530; color: #50c8a0; }
+    .rank-翡翠 { background: #1a3520; color: #50c060; }
+    .rank-钻石 { background: #1a2050; color: #6080e0; }
+    .rank-大师 { background: #2a1040; color: #c060e0; }
+    .rank-宗师 { background: #301030; color: #e060a0; }
+    .rank-挑战者 { background: #303010; color: #e8e050; }
+
+    .card-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .info-item { font-size: 13px; }
+    .info-item .label { color: #556688; margin-right: 4px; }
+    .info-item .value { color: #a8c0e0; }
+
+    .position-tag {
+      display: inline-block;
+      background: #162040;
+      border: 1px solid #2a4070;
+      color: #80a8d0;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #7080a0;
+      border-top: 1px solid #1e3060;
+      padding-top: 10px;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+
+    .time-ago {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 11px;
+      color: #3a5070;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 80px 0;
+      color: #3a5070;
+      font-size: 15px;
+    }
+
+    /* Modal */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay.show { display: flex; }
+
+    .modal {
+      background: #0f1b35;
+      border: 1px solid #c89b3c;
+      border-radius: 10px;
+      padding: 30px;
+      width: 480px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal h2 {
+      font-size: 18px;
+      color: #c89b3c;
+      margin-bottom: 22px;
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: #8899bb;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: #162040;
+      color: #c8d6f0;
+      border: 1px solid #2a4070;
+      border-radius: 4px;
+      padding: 9px 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: #c89b3c; }
+
+    .form-group textarea { resize: vertical; min-height: 70px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .submit-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #c89b3c, #a07828);
+      color: #0a0e1a;
+      border: none;
+      padding: 11px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .submit-btn:hover { opacity: 0.85; }
+
+    .cancel-btn {
+      flex: 1;
+      background: transparent;
+      color: #8899bb;
+      border: 1px solid #2a4070;
+      padding: 11px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cancel-btn:hover { border-color: #c89b3c; color: #c89b3c; }
+
+    .error { color: #e05050; font-size: 12px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚔ LOL <span>组队平台</span></h1>
+  <button class="post-btn" onclick="openModal()">+ 发布组队帖</button>
+</header>
+
+<div class="filter-bar">
+  <label>段位</label>
+  <select id="filterRank" onchange="renderPosts()">
+    <option value="">全部段位</option>
+    <option>铁</option><option>铜</option><option>银</option>
+    <option>金</option><option>铂金</option><option>翡翠</option>
+    <option>钻石</option><option>大师</option><option>宗师</option><option>挑战者</option>
+  </select>
+
+  <label>位置</label>
+  <select id="filterPos" onchange="renderPosts()">
+    <option value="">全部位置</option>
+    <option>上单</option><option>打野</option><option>中单</option>
+    <option>下路</option><option>辅助</option>
+  </select>
+
+  <button class="clear-btn" onclick="clearFilters()">清除筛选</button>
+  <span class="count" id="countLabel"></span>
+</div>
+
+<div class="main">
+  <div class="posts-grid" id="postsGrid"></div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <h2>发布组队帖</h2>
+    <form id="postForm" onsubmit="submitPost(event)">
+      <div class="form-group">
+        <label>召唤师名字 *</label>
+        <input type="text" id="name" placeholder="你的游戏ID" maxlength="20">
+        <div class="error" id="nameErr"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>当前段位 *</label>
+          <select id="rank">
+            <option value="">请选择</option>
+            <option>铁</option><option>铜</option><option>银</option>
+            <option>金</option><option>铂金</option><option>翡翠</option>
+            <option>钻石</option><option>大师</option><option>宗师</option><option>挑战者</option>
+          </select>
+          <div class="error" id="rankErr"></div>
+        </div>
+        <div class="form-group">
+          <label>想打的位置 *</label>
+          <select id="position">
+            <option value="">请选择</option>
+            <option>上单</option><option>打野</option><option>中单</option>
+            <option>下路</option><option>辅助</option><option>不限</option>
+          </select>
+          <div class="error" id="posErr"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>游戏时间 *</label>
+          <input type="text" id="gameTime" placeholder="如：晚上8点-12点" maxlength="30">
+          <div class="error" id="timeErr"></div>
+        </div>
+        <div class="form-group">
+          <label>招募人数 *</label>
+          <select id="need">
+            <option value="">请选择</option>
+            <option>1人</option><option>2人</option><option>3人</option>
+            <option>4人</option><option>5人</option>
+          </select>
+          <div class="error" id="needErr"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>备注（选填）</label>
+        <textarea id="note" placeholder="如：只打排位、不带萌新、语音交流……" maxlength="100"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" onclick="closeModal()">取消</button>
+        <button type="submit" class="submit-btn">发布</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'lol_posts';
+
+  function getPosts() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function savePosts(posts) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  }
+
+  function timeAgo(ts) {
+    const diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60) return '刚刚';
+    if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+    if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+    return Math.floor(diff / 86400) + '天前';
+  }
+
+  function renderPosts() {
+    const rank = document.getElementById('filterRank').value;
+    const pos = document.getElementById('filterPos').value;
+    let posts = getPosts();
+
+    if (rank) posts = posts.filter(p => p.rank === rank);
+    if (pos) posts = posts.filter(p => p.position === pos || p.position === '不限');
+
+    const grid = document.getElementById('postsGrid');
+    const label = document.getElementById('countLabel');
+    label.textContent = `共 ${posts.length} 条`;
+
+    if (posts.length === 0) {
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1">暂无组队帖，来发一个吧！</div>';
+      return;
+    }
+
+    grid.innerHTML = posts.slice().reverse().map(p => `
+      <div class="post-card">
+        <span class="time-ago">${timeAgo(p.ts)}</span>
+        <div class="card-header">
+          <span class="summoner-name">${esc(p.name)}</span>
+          <span class="rank-badge rank-${p.rank}">${p.rank}</span>
+        </div>
+        <div class="card-info">
+          <div class="info-item">
+            <span class="label">位置</span>
+            <span class="position-tag">${p.position}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">招募</span>
+            <span class="value">${p.need}</span>
+          </div>
+          <div class="info-item" style="grid-column:1/-1">
+            <span class="label">时间</span>
+            <span class="value">${esc(p.gameTime)}</span>
+          </div>
+        </div>
+        ${p.note ? `<div class="note">${esc(p.note)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function esc(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function openModal() {
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('name').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('postForm').reset();
+    ['nameErr','rankErr','posErr','timeErr','needErr'].forEach(id => {
+      document.getElementById(id).textContent = '';
+    });
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('overlay')) closeModal();
+  }
+
+  function clearFilters() {
+    document.getElementById('filterRank').value = '';
+    document.getElementById('filterPos').value = '';
+    renderPosts();
+  }
+
+  function submitPost(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const rank = document.getElementById('rank').value;
+    const position = document.getElementById('position').value;
+    const gameTime = document.getElementById('gameTime').value.trim();
+    const need = document.getElementById('need').value;
+    const note = document.getElementById('note').value.trim();
+
+    let valid = true;
+    const setErr = (id, msg) => { document.getElementById(id).textContent = msg; valid = false; };
+    const clrErr = (id) => document.getElementById(id).textContent = '';
+
+    name ? clrErr('nameErr') : setErr('nameErr', '请填写召唤师名字');
+    rank ? clrErr('rankErr') : setErr('rankErr', '请选择段位');
+    position ? clrErr('posErr') : setErr('posErr', '请选择位置');
+    gameTime ? clrErr('timeErr') : setErr('timeErr', '请填写游戏时间');
+    need ? clrErr('needErr') : setErr('needErr', '请选择招募人数');
+
+    if (!valid) return;
+
+    const posts = getPosts();
+    posts.push({ name, rank, position, gameTime, need, note, ts: Date.now() });
+    savePosts(posts);
+    closeModal();
+    renderPosts();
+  }
+
+  renderPosts();
+</script>
+</body>
+</html>
