@@ -9,62 +9,209 @@
 
     body {
       font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: #0a0e1a;
+      background: #070b16;
       color: #c8d6f0;
       min-height: 100vh;
     }
 
+    /* ===== HEADER ===== */
     header {
-      background: linear-gradient(135deg, #0f1b35 0%, #1a2a50 100%);
-      border-bottom: 2px solid #c89b3c;
-      padding: 18px 32px;
+      position: relative;
+      min-height: 380px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 3px solid #c89b3c;
+    }
+
+    .header-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Jinx_0.jpg');
+      background-size: cover;
+      background-position: center 20%;
+      filter: brightness(0.32) saturate(1.2);
+    }
+
+    .header-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(7,11,22,0.2) 0%,
+        rgba(7,11,22,0.05) 40%,
+        rgba(7,11,22,0.85) 100%
+      );
+    }
+
+    .header-content {
+      position: relative;
+      text-align: center;
+      padding: 48px 20px;
+      z-index: 1;
+    }
+
+    .header-eyebrow {
+      font-size: 12px;
+      letter-spacing: 8px;
+      color: #c89b3c;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      opacity: 0.9;
+    }
+
+    .header-deco {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .deco-line {
+      width: 100px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #c89b3c);
+    }
+
+    .deco-line.r {
+      background: linear-gradient(to left, transparent, #c89b3c);
+    }
+
+    .deco-diamond {
+      width: 7px;
+      height: 7px;
+      background: #c89b3c;
+      transform: rotate(45deg);
+      box-shadow: 0 0 8px rgba(200,155,60,0.8);
     }
 
     header h1 {
-      font-size: 22px;
-      color: #c89b3c;
-      letter-spacing: 2px;
-      text-shadow: 0 0 12px rgba(200,155,60,0.5);
+      font-size: 64px;
+      color: #e8d5a0;
+      letter-spacing: 10px;
+      line-height: 1;
+      margin-bottom: 10px;
+      text-shadow:
+        0 0 20px rgba(200,155,60,0.9),
+        0 0 50px rgba(200,155,60,0.4),
+        0 3px 6px rgba(0,0,0,0.9);
     }
 
-    header h1 span { color: #e8d5a0; }
+    header h2 {
+      font-size: 20px;
+      color: #a0b8d8;
+      letter-spacing: 14px;
+      font-weight: 300;
+      margin-bottom: 28px;
+    }
+
+    .header-tagline {
+      font-size: 13px;
+      color: #607090;
+      letter-spacing: 3px;
+      margin-bottom: 36px;
+    }
 
     .post-btn {
-      background: linear-gradient(135deg, #c89b3c, #a07828);
-      color: #0a0e1a;
+      background: linear-gradient(135deg, #c89b3c 0%, #a07828 100%);
+      color: #07090f;
       border: none;
-      padding: 10px 22px;
+      padding: 13px 36px;
       font-size: 14px;
       font-weight: bold;
-      border-radius: 4px;
+      border-radius: 2px;
       cursor: pointer;
-      letter-spacing: 1px;
-      transition: opacity 0.2s;
+      letter-spacing: 3px;
+      transition: all 0.25s;
+      box-shadow: 0 0 24px rgba(200,155,60,0.45), 0 4px 12px rgba(0,0,0,0.5);
     }
 
-    .post-btn:hover { opacity: 0.85; }
-    .post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .post-btn:hover {
+      box-shadow: 0 0 36px rgba(200,155,60,0.7), 0 4px 12px rgba(0,0,0,0.5);
+      transform: translateY(-2px);
+    }
 
-    .filter-bar {
-      background: #0f1b35;
-      border-bottom: 1px solid #1e3060;
-      padding: 14px 32px;
+    .post-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ===== CHAMPION STRIP ===== */
+    .champion-strip {
       display: flex;
-      gap: 16px;
+      background: #040710;
+      border-bottom: 2px solid #1a2540;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .champion-strip::-webkit-scrollbar { display: none; }
+
+    .champ {
+      flex: 0 0 110px;
+      height: 155px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .champ img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      transition: transform 0.35s, filter 0.35s;
+      filter: brightness(0.6) saturate(0.7);
+    }
+
+    .champ:hover img {
+      transform: scale(1.08);
+      filter: brightness(0.9) saturate(1.1);
+    }
+
+    .champ-name {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 8px 4px 6px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.9));
+      font-size: 11px;
+      color: #c89b3c;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .champ::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-right: 1px solid rgba(200,155,60,0.08);
+      pointer-events: none;
+      transition: border-color 0.2s;
+    }
+
+    .champ:hover::after { border-color: rgba(200,155,60,0.4); }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+      background: #09101f;
+      border-bottom: 1px solid #182038;
+      padding: 13px 32px;
+      display: flex;
+      gap: 14px;
       align-items: center;
       flex-wrap: wrap;
     }
 
-    .filter-bar label { font-size: 13px; color: #8899bb; }
+    .filter-bar label {
+      font-size: 11px;
+      color: #4a6080;
+      letter-spacing: 1px;
+    }
 
     .filter-bar select {
-      background: #162040;
+      background: #0d1628;
       color: #c8d6f0;
-      border: 1px solid #2a4070;
-      border-radius: 4px;
+      border: 1px solid #243358;
+      border-radius: 2px;
       padding: 6px 12px;
       font-size: 13px;
       cursor: pointer;
@@ -75,39 +222,55 @@
 
     .clear-btn {
       background: transparent;
-      color: #8899bb;
-      border: 1px solid #2a4070;
+      color: #4a6080;
+      border: 1px solid #182038;
       padding: 6px 14px;
-      border-radius: 4px;
-      font-size: 13px;
+      border-radius: 2px;
+      font-size: 12px;
       cursor: pointer;
+      letter-spacing: 1px;
       transition: all 0.2s;
     }
 
     .clear-btn:hover { border-color: #c89b3c; color: #c89b3c; }
 
-    .count { font-size: 13px; color: #556688; margin-left: auto; }
+    .count { font-size: 12px; color: #304050; margin-left: auto; letter-spacing: 1px; }
 
-    .main { padding: 28px 32px; max-width: 1100px; margin: 0 auto; }
+    /* ===== MAIN ===== */
+    .main { padding: 28px 32px; max-width: 1200px; margin: 0 auto; }
 
     .posts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
+      gap: 18px;
     }
 
+    /* ===== CARDS ===== */
     .post-card {
-      background: #0f1b35;
-      border: 1px solid #1e3060;
-      border-radius: 8px;
+      background: linear-gradient(145deg, #0c1628 0%, #08101e 100%);
+      border: 1px solid #1a2840;
+      border-left: 3px solid #c89b3c;
+      border-radius: 3px;
       padding: 20px;
-      transition: border-color 0.2s, transform 0.1s;
+      transition: all 0.22s;
       position: relative;
+      overflow: hidden;
+    }
+
+    .post-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; right: -1px;
+      width: 60px; height: 60px;
+      background: radial-gradient(circle at top right, rgba(200,155,60,0.07), transparent 70%);
+      pointer-events: none;
     }
 
     .post-card:hover {
-      border-color: #c89b3c;
-      transform: translateY(-2px);
+      border-color: #2a4068;
+      border-left-color: #e8d5a0;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,155,60,0.15);
     }
 
     .card-header {
@@ -118,131 +281,131 @@
     }
 
     .summoner-name {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: bold;
-      color: #e8d5a0;
+      color: #dccf9a;
+      letter-spacing: 0.5px;
     }
 
     .rank-badge {
-      font-size: 12px;
+      font-size: 11px;
       padding: 3px 10px;
-      border-radius: 12px;
+      border-radius: 1px;
       font-weight: bold;
+      letter-spacing: 1px;
     }
 
-    .rank-铁 { background: #4a3030; color: #c08080; }
-    .rank-铜 { background: #3d2e1e; color: #c8935a; }
-    .rank-银 { background: #2a3040; color: #a0b8d0; }
-    .rank-金 { background: #3a2e10; color: #c89b3c; }
-    .rank-铂金 { background: #1a3530; color: #50c8a0; }
-    .rank-翡翠 { background: #1a3520; color: #50c060; }
-    .rank-钻石 { background: #1a2050; color: #6080e0; }
-    .rank-大师 { background: #2a1040; color: #c060e0; }
-    .rank-宗师 { background: #301030; color: #e060a0; }
-    .rank-挑战者 { background: #303010; color: #e8e050; }
+    .rank-铁      { background: #200e0e; color: #c08080; border: 1px solid #3a1a1a; }
+    .rank-铜      { background: #201408; color: #c8935a; border: 1px solid #3a2810; }
+    .rank-银      { background: #101828; color: #a0b8d0; border: 1px solid #1e3040; }
+    .rank-金      { background: #201806; color: #c89b3c; border: 1px solid #38300e; }
+    .rank-铂金    { background: #081e18; color: #50c8a0; border: 1px solid #103828; }
+    .rank-翡翠    { background: #081e10; color: #50c060; border: 1px solid #103818; }
+    .rank-钻石    { background: #081438; color: #6080e0; border: 1px solid #102258; }
+    .rank-大师    { background: #180628; color: #c060e0; border: 1px solid #2c0e48; }
+    .rank-宗师    { background: #1c0614; color: #e060a0; border: 1px solid #340e22; }
+    .rank-挑战者  { background: #1c1c08; color: #e8e050; border: 1px solid #343408; }
 
     .card-info {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 9px;
       margin-bottom: 12px;
     }
 
     .info-item { font-size: 13px; }
-    .info-item .label { color: #556688; margin-right: 4px; }
-    .info-item .value { color: #a8c0e0; }
+    .info-label { color: #304050; font-size: 11px; letter-spacing: 0.5px; margin-right: 4px; }
+    .info-value { color: #8098b8; }
 
     .position-tag {
       display: inline-block;
-      background: #162040;
-      border: 1px solid #2a4070;
-      color: #80a8d0;
-      font-size: 12px;
+      background: #0c1628;
+      border: 1px solid #243358;
+      color: #6080a8;
+      font-size: 11px;
       padding: 2px 8px;
       border-radius: 10px;
     }
 
     .note {
-      font-size: 13px;
-      color: #7080a0;
-      border-top: 1px solid #1e3060;
+      font-size: 12px;
+      color: #445566;
+      border-top: 1px solid #14202e;
       padding-top: 10px;
       margin-top: 4px;
       word-break: break-all;
+      font-style: italic;
     }
 
     .time-ago {
       position: absolute;
-      top: 12px;
-      right: 14px;
+      top: 12px; right: 14px;
       font-size: 11px;
-      color: #3a5070;
+      color: #243040;
     }
 
-    .empty {
+    .empty, .loading {
       text-align: center;
       padding: 80px 0;
-      color: #3a5070;
+      color: #243040;
       font-size: 15px;
+      letter-spacing: 2px;
     }
 
-    .loading {
-      text-align: center;
-      padding: 80px 0;
-      color: #3a5070;
-      font-size: 15px;
-    }
-
-    /* Modal */
+    /* ===== MODAL ===== */
     .overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.88);
       z-index: 100;
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(6px);
     }
 
     .overlay.show { display: flex; }
 
     .modal {
-      background: #0f1b35;
+      background: linear-gradient(145deg, #0c1628, #08101e);
       border: 1px solid #c89b3c;
-      border-radius: 10px;
-      padding: 30px;
-      width: 480px;
+      border-radius: 4px;
+      padding: 32px;
+      width: 500px;
       max-width: 95vw;
       max-height: 90vh;
       overflow-y: auto;
+      box-shadow: 0 0 50px rgba(200,155,60,0.18), 0 20px 60px rgba(0,0,0,0.7);
     }
 
     .modal h2 {
-      font-size: 18px;
+      font-size: 17px;
       color: #c89b3c;
-      margin-bottom: 22px;
-      letter-spacing: 1px;
+      margin-bottom: 24px;
+      letter-spacing: 5px;
+      text-align: center;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #182038;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
+    .form-group { margin-bottom: 15px; }
 
     .form-group label {
       display: block;
-      font-size: 13px;
-      color: #8899bb;
+      font-size: 11px;
+      color: #4a6080;
       margin-bottom: 6px;
+      letter-spacing: 1px;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       width: 100%;
-      background: #162040;
+      background: #07101e;
       color: #c8d6f0;
-      border: 1px solid #2a4070;
-      border-radius: 4px;
+      border: 1px solid #182038;
+      border-radius: 2px;
       padding: 9px 12px;
       font-size: 14px;
       outline: none;
@@ -258,52 +421,82 @@
 
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 22px;
-    }
+    .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
 
     .submit-btn {
       flex: 1;
       background: linear-gradient(135deg, #c89b3c, #a07828);
-      color: #0a0e1a;
+      color: #07090f;
       border: none;
-      padding: 11px;
+      padding: 12px;
       font-size: 14px;
       font-weight: bold;
-      border-radius: 4px;
+      border-radius: 2px;
       cursor: pointer;
-      transition: opacity 0.2s;
+      letter-spacing: 3px;
+      transition: all 0.2s;
     }
 
-    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:hover { box-shadow: 0 0 20px rgba(200,155,60,0.5); }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .cancel-btn {
       flex: 1;
       background: transparent;
-      color: #8899bb;
-      border: 1px solid #2a4070;
-      padding: 11px;
+      color: #4a6080;
+      border: 1px solid #182038;
+      padding: 12px;
       font-size: 14px;
-      border-radius: 4px;
+      border-radius: 2px;
       cursor: pointer;
       transition: all 0.2s;
     }
 
     .cancel-btn:hover { border-color: #c89b3c; color: #c89b3c; }
 
-    .error { color: #e05050; font-size: 12px; margin-top: 5px; }
+    .error { color: #c04040; font-size: 12px; margin-top: 5px; }
   </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
-  <h1>⚔ LOL <span>组队平台</span></h1>
-  <button class="post-btn" onclick="openModal()">+ 发布组队帖</button>
+  <div class="header-bg"></div>
+  <div class="header-overlay"></div>
+  <div class="header-content">
+    <p class="header-eyebrow">League of Legends</p>
+    <div class="header-deco">
+      <div class="deco-line"></div>
+      <div class="deco-diamond"></div>
+      <div class="deco-line r"></div>
+    </div>
+    <h1>英雄联盟</h1>
+    <h2>组　队　平　台</h2>
+    <p class="header-tagline">找到你的队友，征服召唤师峡谷</p>
+    <button class="post-btn" onclick="openModal()">＋ 发布组队帖</button>
+  </div>
 </header>
 
+<!-- CHAMPION STRIP -->
+<div class="champion-strip">
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ahri_0.jpg" alt="阿狸"><div class="champ-name">阿狸</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yasuo_0.jpg" alt="亚索"><div class="champ-name">亚索</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Zed_0.jpg" alt="劫"><div class="champ-name">劫</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Jinx_0.jpg" alt="金克丝"><div class="champ-name">金克丝</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Thresh_0.jpg" alt="锤石"><div class="champ-name">锤石</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/LeeSin_0.jpg" alt="李青"><div class="champ-name">李青</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Lux_0.jpg" alt="拉克丝"><div class="champ-name">拉克丝</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Vi_0.jpg" alt="蔚"><div class="champ-name">蔚</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ezreal_0.jpg" alt="伊泽瑞尔"><div class="champ-name">伊泽瑞尔</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Nautilus_0.jpg" alt="诺提勒斯"><div class="champ-name">诺提勒斯</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Caitlyn_0.jpg" alt="凯特琳"><div class="champ-name">凯特琳</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Ekko_0.jpg" alt="艾克"><div class="champ-name">艾克</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Darius_0.jpg" alt="德莱厄斯"><div class="champ-name">德莱厄斯</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Syndra_0.jpg" alt="辛德拉"><div class="champ-name">辛德拉</div></div>
+  <div class="champ"><img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/KhaZix_0.jpg" alt="卡兹克"><div class="champ-name">卡兹克</div></div>
+</div>
+
+<!-- FILTER BAR -->
 <div class="filter-bar">
   <label>段位</label>
   <select id="filterRank" onchange="renderPosts()">
@@ -344,7 +537,7 @@
 <!-- Modal -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="modal">
-    <h2>发布组队帖</h2>
+    <h2>发 布 组 队 帖</h2>
     <form id="postForm" onsubmit="submitPost(event)">
       <div class="form-row">
         <div class="form-group">
@@ -413,16 +606,15 @@
 
       <div class="modal-actions">
         <button type="button" class="cancel-btn" onclick="closeModal()">取消</button>
-        <button type="submit" class="submit-btn" id="submitBtn">发布</button>
+        <button type="submit" class="submit-btn" id="submitBtn">发 布</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB3oY2yGXpfevEk9jWWuFZKLlDYoPe8sjM",
@@ -458,7 +650,7 @@
     grid.innerHTML = '<div class="loading" style="grid-column:1/-1">加载中...</div>';
 
     try {
-      let q = query(collection(db, 'posts'), orderBy('ts', 'desc'));
+      const q = query(collection(db, 'posts'), orderBy('ts', 'desc'));
       const snapshot = await getDocs(q);
       let posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
@@ -469,7 +661,7 @@
       label.textContent = `共 ${posts.length} 条`;
 
       if (posts.length === 0) {
-        grid.innerHTML = '<div class="empty" style="grid-column:1/-1">暂无组队帖，来发一个吧！</div>';
+        grid.innerHTML = '<div class="empty" style="grid-column:1/-1">暂无组队帖，来发一个吧</div>';
         return;
       }
 
@@ -482,20 +674,20 @@
           </div>
           <div class="card-info">
             <div class="info-item">
-              <span class="label">位置</span>
+              <span class="info-label">位置</span>
               <span class="position-tag">${esc(p.position)}</span>
             </div>
             <div class="info-item">
-              <span class="label">招募</span>
-              <span class="value">${esc(p.need)}</span>
+              <span class="info-label">招募</span>
+              <span class="info-value">${esc(p.need)}</span>
             </div>
             <div class="info-item">
-              <span class="label">大区</span>
-              <span class="value">${esc(p.server || '未知')}</span>
+              <span class="info-label">大区</span>
+              <span class="info-value">${esc(p.server || '未知')}</span>
             </div>
             <div class="info-item">
-              <span class="label">时间</span>
-              <span class="value">${esc(p.gameTime)}</span>
+              <span class="info-label">时间</span>
+              <span class="info-value">${esc(p.gameTime)}</span>
             </div>
           </div>
           ${p.note ? `<div class="note">${esc(p.note)}</div>` : ''}
@@ -545,12 +737,12 @@
     const setErr = (id, msg) => { document.getElementById(id).textContent = msg; valid = false; };
     const clrErr = (id) => document.getElementById(id).textContent = '';
 
-    name ? clrErr('nameErr') : setErr('nameErr', '请填写召唤师名字');
-    server ? clrErr('serverErr') : setErr('serverErr', '请选择大区');
-    rank ? clrErr('rankErr') : setErr('rankErr', '请选择段位');
-    position ? clrErr('posErr') : setErr('posErr', '请选择位置');
-    gameTime ? clrErr('timeErr') : setErr('timeErr', '请填写游戏时间');
-    need ? clrErr('needErr') : setErr('needErr', '请选择招募人数');
+    name     ? clrErr('nameErr')   : setErr('nameErr',   '请填写召唤师名字');
+    server   ? clrErr('serverErr') : setErr('serverErr', '请选择大区');
+    rank     ? clrErr('rankErr')   : setErr('rankErr',   '请选择段位');
+    position ? clrErr('posErr')    : setErr('posErr',    '请选择位置');
+    gameTime ? clrErr('timeErr')   : setErr('timeErr',   '请填写游戏时间');
+    need     ? clrErr('needErr')   : setErr('needErr',   '请选择招募人数');
 
     if (!valid) return;
 
@@ -570,7 +762,7 @@
       console.error(err);
     } finally {
       btn.disabled = false;
-      btn.textContent = '发布';
+      btn.textContent = '发 布';
     }
   };
 
